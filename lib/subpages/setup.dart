@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../constants/colors.dart';
 
-
 final List<Duration> _durations = <Duration>[
   const Duration(7, 'Weekly'),
   const Duration(14, 'Bi-Weekly'),
