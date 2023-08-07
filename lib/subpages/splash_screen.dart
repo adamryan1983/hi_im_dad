@@ -6,6 +6,7 @@ class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _SplashScreenState createState() => _SplashScreenState();
 }
 
@@ -16,7 +17,12 @@ class _SplashScreenState extends State<SplashScreen> {
     // Add a delay to simulate a long-loading task
     Future.delayed(const Duration(seconds: 3), () {
       // Navigate to the home screen after the splash screen is displayed
-      Navigator.pushReplacementNamed(context, '/homescreen');
+      if (Hive.box('userBox').get('isSetup') == true) {
+        Navigator.pushReplacementNamed(context, '/homescreen');
+      } else {
+        Navigator.pushReplacementNamed(context, '/setup');
+      }
+      // Navigator.pushReplacementNamed(context, '/homescreen');
     });
   }
 
@@ -27,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.error != null) {
-            print(snapshot.error);
+            debugPrint(snapshot.error.toString());
             return const Scaffold(
               body: Center(
                 child: Text('Something went wrong :/'),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hi_im_dad/subpages/settings.dart';
+import 'subpages/setup.dart';
 import 'subpages/splash_screen.dart';
 import 'widgets/drawer.dart';
 import 'constants/colors.dart';
@@ -64,7 +65,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (_) => const SplashScreen(),
         '/homescreen': (_) => const MyHomePage(title: 'Hi I\'m Dad!'),
-        '/settings': (_) => Settings(),
+        '/settings': (_) => const Settings(),
+        '/setup': (_) => const Setup(),
       },
     );
   }
@@ -89,22 +91,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late final _ratingController;
   late double _rating;
 
-  bool _isVertical = false;
 
-  IconData? _selectedIcon;
+  // IconData? _selectedIcon;
   final Box _box = Hive.box('userBox');
 
   @override
   void initState() {
     super.initState();
     final Box box = Hive.box('userBox');
-    final String _name = box.get('name', defaultValue: 'Dadam')!;
+    // final String _name = box.get('name', defaultValue: 'Dadam')!;
     // _box.put('name', _name);
     // _box = Hive.box<double>('myBox');
-    _rating = _box.get('rating', defaultValue: 0.0)!;
+    _rating = box.get('rating', defaultValue: 0.0)!;
   }
 
   //sets the rating from the slider
