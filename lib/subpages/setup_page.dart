@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
 import '../constants/colors.dart';
 
 class DurationTime {
@@ -14,18 +15,14 @@ final List<DurationTime> _durations = <DurationTime>[
   const DurationTime(30, 'Monthly'),
 ];
 
-// Define a custom Form widget.
-class Settings extends StatefulWidget {
-  const Settings({super.key});
+class SetupPage extends StatefulWidget {
+  const SetupPage({super.key});
+
   @override
-  SettingsState createState() {
-    return SettingsState();
-  }
+  State<SetupPage> createState() => _SetupPageState();
 }
 
-// Define a corresponding State class.
-// This class holds data related to the form.
-class SettingsState extends State<Settings> {
+class _SetupPageState extends State<SetupPage> {
   final _formKey = GlobalKey<FormState>();
   final nameController = TextEditingController();
   final durationController = TextEditingController();
@@ -34,8 +31,6 @@ class SettingsState extends State<Settings> {
   @override
   void initState() {
     super.initState();
-    nameController.value = TextEditingValue(
-        text: Hive.box('userBox').get('name', defaultValue: 'N/A')!);
   }
 
   @override
@@ -47,13 +42,14 @@ class SettingsState extends State<Settings> {
 
   void setSettings(String name) {
     var namer = name;
-    Hive.box('userBox').put('name', namer);
-    Hive.box('userBox').put('duration', dropdownValue.value);
-    Hive.box('userBox').put('isSetup', true);
-    Hive.box('userBox').put(
-        'lastReset', DateTime.now().add(Duration(days: dropdownValue.value)));
-    Navigator.popAndPushNamed(context, '/homescreen');
-    // Navigator.pushReplacementNamed(context, '/homescreen');
+    Box box = Hive.box('userBox');
+    box.put('name', namer);
+    box.put('duration', dropdownValue.value);
+    box.put('rating', 0.0);
+    box.put('lastReset', DateTime.now().add(Duration(days: dropdownValue.value)));
+    box.put('isSetup', true);
+    Navigator.pushReplacementNamed(context, '/homescreen');
+    // Hive.box('userBox').put('duration', );
     nameController.clear();
   }
 
@@ -63,7 +59,7 @@ class SettingsState extends State<Settings> {
     return Material(
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: AppColors.armyGreen,
+          backgroundColor: AppColors.darkGreen,
           foregroundColor: AppColors.mainTextWhite,
           title: const Text('Settings'),
         ),
@@ -75,8 +71,20 @@ class SettingsState extends State<Settings> {
             child: Column(
               children: <Widget>[
                 const Padding(padding: EdgeInsets.symmetric(vertical: 30)),
+                const SizedBox(
+                  width: 300,
+                  height: 100,
+                  child: Text("Please choose your initial settings: ",
+                      style: TextStyle(fontSize: 30),
+                      textAlign: TextAlign.center),
+                ),
+                const Padding(padding: EdgeInsets.symmetric(vertical: 30)),
+
+                const Text(
+                  "Enter your dad name: ",
+                  style: TextStyle(fontSize: 20),
+                ),
                 // Add TextFormFields and ElevatedButton here.
-                const Text("Set your name: "),
                 SizedBox(
                   width: 280,
                   child: TextFormField(
@@ -94,7 +102,10 @@ class SettingsState extends State<Settings> {
                   ),
                 ),
                 const Padding(padding: EdgeInsets.symmetric(vertical: 30)),
-                const Text('Select a duration for your score to reset:'),
+                const Text(
+                  'Select a duration for your score to reset:',
+                  style: TextStyle(fontSize: 20),
+                ),
 
                 //add dropdown here
                 DropdownButton<DurationTime>(
@@ -112,8 +123,8 @@ class SettingsState extends State<Settings> {
                       dropdownValue = value!;
                     });
                   },
-                  items: _durations.map<DropdownMenuItem<DurationTime>>(
-                      (DurationTime value) {
+                  items: _durations
+                      .map<DropdownMenuItem<DurationTime>>((DurationTime value) {
                     return DropdownMenuItem<DurationTime>(
                         value: value,
                         child: Text(
@@ -122,6 +133,34 @@ class SettingsState extends State<Settings> {
                   }).toList(),
                 ),
                 const Padding(padding: EdgeInsets.symmetric(vertical: 20)),
+                ValueListenableBuilder(
+                  valueListenable: Hive.box('userBox').listenable(),
+                  builder: (context, Box box, _) {
+                    return Text(
+                      box.get('name', defaultValue: 'N/A')!,
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    );
+                  },
+                ),
+                ValueListenableBuilder(
+                  valueListenable: Hive.box('userBox').listenable(),
+                  builder: (context, Box box, _) {
+                    return Text(
+                      box.get('duration', defaultValue: 'N/A').toString(),
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    );
+                  },
+                ),
+                ValueListenableBuilder(
+                  valueListenable: Hive.box('userBox').listenable(),
+                  builder: (context, Box box, _) {
+                    return Text(
+                      box.get('isSetup', defaultValue: false).toString(),
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    );
+                  },
+                ),
+                const Padding(padding: EdgeInsets.symmetric(vertical: 30)),
                 ElevatedButton(
                   onPressed: () {
                     // Validate returns true if the form is valid, or false otherwise.
@@ -130,7 +169,7 @@ class SettingsState extends State<Settings> {
                       // you'd often call a server or save the information in a database.
                       setSettings(nameController.text);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Processing Data')),
+                        const SnackBar(content: Text('Saved Settings')),
                       );
                     }
                   },

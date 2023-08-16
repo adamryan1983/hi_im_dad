@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hi_im_dad/subpages/settings.dart';
-import 'subpages/setup.dart';
+import 'subpages/setup_page.dart';
 import 'subpages/splash_screen.dart';
 import 'widgets/drawer.dart';
 import 'constants/colors.dart';
@@ -10,7 +10,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 void main() async {
   await Hive.initFlutter();
   await Hive.openBox('userBox');
-  
+
   // box.put('name', 'Dadamo');
   // box.put('duration', 7);
   // box.put('rating', 0.0);
@@ -66,7 +66,7 @@ class MyApp extends StatelessWidget {
         '/': (_) => const SplashScreen(),
         '/homescreen': (_) => const MyHomePage(title: 'Hi I\'m Dad!'),
         '/settings': (_) => const Settings(),
-        '/setup': (_) => const Setup(),
+        '/setup': (_) => const SetupPage(),
       },
     );
   }
@@ -93,18 +93,22 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late double _rating;
 
-
   // IconData? _selectedIcon;
   final Box _box = Hive.box('userBox');
 
   @override
   void initState() {
     super.initState();
-    final Box box = Hive.box('userBox');
-    // final String _name = box.get('name', defaultValue: 'Dadam')!;
-    // _box.put('name', _name);
-    // _box = Hive.box<double>('myBox');
-    _rating = box.get('rating', defaultValue: 0.0)!;
+    //get current date
+
+    if (_box
+        .get('lastReset', defaultValue: DateTime.now())
+        .isBefore(DateTime.now())) {
+      resetUserRating();
+      final dayAmt = _box.get('duration', defaultValue: 7);
+      _box.put('lastReset', DateTime.now().add(Duration(days: dayAmt)));
+    }
+    _rating = 2.5;
   }
 
   //sets the rating from the slider
@@ -136,23 +140,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
         //middle icon
         iconTheme: const IconThemeData(color: AppColors.lightOrange),
 
         //start of bar
-        leading: Builder(builder: (context) => // Ensure Scaffold is in context
-            IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () => Scaffold.of(context).openDrawer()
-            ),),
+        leading: Builder(
+          builder: (context) => // Ensure Scaffold is in context
+              IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () => Scaffold.of(context).openDrawer()),
+        ),
 
         //end of bar
         actions: [
@@ -192,118 +191,122 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       drawer: const MyDrawer(),
-      body: Center(
+      body: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height / 1.2,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Hi, I\'m Dad!',
-              style: TextStyle(fontSize: 32, fontFamily: 'BungeeSpice'),
-            ),
-            const Text(
-              'Welcome:',
-            ),
-            ValueListenableBuilder(
-              valueListenable: _box.listenable(),
-              builder: (context, Box box, _) {
-                return Text(
-                  box.get('name', defaultValue: 'N/A')!,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                );
-              },
-            ),
-            // Text(
-            //   _box.get('name', defaultValue: 'N/A')!,
-            //   style: Theme.of(context).textTheme.headlineMedium,
-            // ),
-            // RatingBar.builder(
-            //     initialRating: 3,
-            //     itemCount: 5,
-            //     itemBuilder: (context, index) {
-            //       switch (index) {
-            //         case 0:
-            //           return const Icon(
-            //             Icons.sentiment_very_dissatisfied,
-            //             color: Colors.red,
-            //           );
-            //         case 1:
-            //           return const Icon(
-            //             Icons.sentiment_dissatisfied,
-            //             color: Colors.redAccent,
-            //           );
-            //         case 2:
-            //           return const Icon(
-            //             Icons.sentiment_neutral,
-            //             color: Colors.amber,
-            //           );
-            //         case 3:
-            //           return const Icon(
-            //             Icons.sentiment_satisfied,
-            //             color: Colors.lightGreen,
-            //           );
-            //         case 4:
-            //           return const Icon(
-            //             Icons.sentiment_very_satisfied,
-            //             color: Colors.green,
-            //           );
-            //         default:
-            //           return Container();
-            //       }
-            //     },
-            //     onRatingUpdate: (rating) {
-            //       _setRating(rating);
-            //     }),
-            RatingBar(
-              initialRating: 3,
-              direction: Axis.horizontal,
-              allowHalfRating: true,
-              itemCount: 5,
-              ratingWidget: RatingWidget(
-                full: _image('assets/images/lawner.png'),
-                half: _image('assets/images/lawner_half.png'),
-                empty: _image('assets/images/lawner_border.png'),
-              ),
-              itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-              onRatingUpdate: (rating) {
-                _setRating(rating);
-              },
-            ),
-            Text(_rating.toString()),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    updateUserrating(_rating);
-                  },
-                  child: const Text('Add Rating'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    resetUserRating();
-                  },
-                  child: const Text('Reset Rating'),
-                ),
-              ],
-            ),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-              child: TextFormField(
-                decoration: const InputDecoration(
-                  border: UnderlineInputBorder(),
-                  labelText: 'Enter your username',
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              const Text(
+                'Welcome:',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontFamily: 'BungeeSpice',
                 ),
               ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                setName('Woop');
-              },
-              child: const Text('Reset Rating'),
-            ),
-          ],
-        ),
+              ValueListenableBuilder(
+                valueListenable: _box.listenable(),
+                builder: (context, Box box, _) {
+                  return Text(
+                    box.get('name', defaultValue: 'N/A')!,
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  );
+                },
+              ),
+              Image.asset(
+                'assets/images/logo.png',
+                width: 300,
+                height: 300,
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Text(
+                  //   _box.get('name', defaultValue: 'N/A')!,
+                  //   style: Theme.of(context).textTheme.headlineMedium,
+                  // ),
+                  // RatingBar.builder(
+                  //     initialRating: 3,
+                  //     itemCount: 5,
+                  //     itemBuilder: (context, index) {
+                  //       switch (index) {
+                  //         case 0:
+                  //           return const Icon(
+                  //             Icons.sentiment_very_dissatisfied,
+                  //             color: Colors.red,
+                  //           );
+                  //         case 1:
+                  //           return const Icon(
+                  //             Icons.sentiment_dissatisfied,
+                  //             color: Colors.redAccent,
+                  //           );
+                  //         case 2:
+                  //           return const Icon(
+                  //             Icons.sentiment_neutral,
+                  //             color: Colors.amber,
+                  //           );
+                  //         case 3:
+                  //           return const Icon(
+                  //             Icons.sentiment_satisfied,
+                  //             color: Colors.lightGreen,
+                  //           );
+                  //         case 4:
+                  //           return const Icon(
+                  //             Icons.sentiment_very_satisfied,
+                  //             color: Colors.green,
+                  //           );
+                  //         default:
+                  //           return Container();
+                  //       }
+                  //     },
+                  //     onRatingUpdate: (rating) {
+                  //       _setRating(rating);
+                  //     }),
+                  RatingBar(
+                    initialRating: 3,
+                    direction: Axis.horizontal,
+                    allowHalfRating: true,
+                    itemCount: 5,
+                    ratingWidget: RatingWidget(
+                      full: _image('assets/images/lawner.png'),
+                      half: _image('assets/images/lawner_half.png'),
+                      empty: _image('assets/images/lawner_border.png'),
+                    ),
+                    itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    onRatingUpdate: (rating) {
+                      _setRating(rating);
+                    },
+                  ),
+                  Text(_rating.toString()),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          updateUserrating(_rating);
+                        },
+                        child: const Text('Add Rating'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          resetUserRating();
+                        },
+                        child: const Text('Reset Rating'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30),
+                child: Text(
+                    'This is a fun app to ask your family for a rating of your best dad jokes. \n'
+                    'Your family can rate them on a scale of 1-5. \n'
+                    'Choose between different durations to track the ultimate dad score. \n'
+                    'It will reset the score each period. You can also reset the rating to 0 manually. \n\n'
+                    'Have fun!'),
+              ),
+            ]),
       ),
     );
   }
