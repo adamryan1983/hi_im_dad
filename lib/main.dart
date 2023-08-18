@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hi_im_dad/subpages/settings.dart';
 import 'subpages/setup_page.dart';
@@ -6,6 +8,7 @@ import 'widgets/drawer.dart';
 import 'constants/colors.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter/cupertino.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -279,20 +282,61 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   Text(_rating.toString()),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          updateUserrating(_rating);
-                        },
-                        child: const Text('Add Rating'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          resetUserRating();
-                        },
-                        child: const Text('Reset Rating'),
-                      ),
+                      Platform.isIOS
+                          ? SizedBox(
+                              width: 120,
+                              height: 40,
+                              child: CupertinoButton(
+                                color: AppColors.armyGreen,
+                                padding: const EdgeInsets.all(0),
+                                onPressed: () {
+                                  updateUserrating(_rating);
+                                },
+                                child: const Text('Add Rating'),
+                              ),
+                            )
+                          : ElevatedButton(
+                              onPressed: () {
+                                updateUserrating(_rating);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    AppColors.armyGreen, // background
+                                foregroundColor:
+                                    AppColors.lightBG, // foreground
+                              ),
+                              child: const Text(
+                                'Add Rating',
+                                style: TextStyle(fontSize: 15),
+                              ),
+                            ),
+                      Platform.isIOS
+                          ? SizedBox(
+                              width: 120,
+                              height: 40,
+                              child: CupertinoButton(
+                                padding: const EdgeInsets.all(0),
+                                color: Colors.red[800],
+                                onPressed: () {
+                                  resetUserRating();
+                                },
+                                
+                                child: const Text('Reset Rating'),
+                                
+                              ),
+                            )
+                          : ElevatedButton(
+                              onPressed: () {
+                                resetUserRating();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red, // background
+                                foregroundColor: AppColors.lightBG,
+                              ), //
+                              child: const Text('Reset Rating'),
+                            ),
                     ],
                   ),
                 ],
