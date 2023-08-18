@@ -58,6 +58,7 @@ class _SetupPageState extends State<SetupPage> {
     // Build a Form widget using the _formKey created above.
     return Material(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           backgroundColor: AppColors.darkGreen,
           foregroundColor: AppColors.mainTextWhite,
@@ -132,34 +133,7 @@ class _SetupPageState extends State<SetupPage> {
                         ));
                   }).toList(),
                 ),
-                const Padding(padding: EdgeInsets.symmetric(vertical: 20)),
-                ValueListenableBuilder(
-                  valueListenable: Hive.box('userBox').listenable(),
-                  builder: (context, Box box, _) {
-                    return Text(
-                      box.get('name', defaultValue: 'N/A')!,
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    );
-                  },
-                ),
-                ValueListenableBuilder(
-                  valueListenable: Hive.box('userBox').listenable(),
-                  builder: (context, Box box, _) {
-                    return Text(
-                      box.get('duration', defaultValue: 'N/A').toString(),
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    );
-                  },
-                ),
-                ValueListenableBuilder(
-                  valueListenable: Hive.box('userBox').listenable(),
-                  builder: (context, Box box, _) {
-                    return Text(
-                      box.get('isSetup', defaultValue: false).toString(),
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    );
-                  },
-                ),
+
                 const Padding(padding: EdgeInsets.symmetric(vertical: 30)),
                 ElevatedButton(
                   onPressed: () {

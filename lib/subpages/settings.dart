@@ -63,7 +63,7 @@ class SettingsState extends State<Settings> {
     Hive.box('userBox').put('duration', dropdownValue.value);
     Hive.box('userBox').put('isSetup', true);
     Hive.box('userBox').put(
-      'lastReset', DateTime.now().add(Duration(days: dropdownValue.value)));
+        'lastReset', DateTime.now().add(Duration(days: dropdownValue.value)));
     Navigator.popAndPushNamed(context, '/homescreen');
     // Navigator.pushReplacementNamed(context, '/homescreen');
     nameController.clear();
@@ -74,6 +74,7 @@ class SettingsState extends State<Settings> {
     // Build a Form widget using the _formKey created above.
     return Material(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           backgroundColor: AppColors.armyGreen,
           foregroundColor: AppColors.mainTextWhite,
@@ -103,8 +104,9 @@ class SettingsState extends State<Settings> {
                           validator: (String? value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter some text';
+                            } else {
+                              return null;
                             }
-                            else {return null;}
                           },
 
                           // onChanged: (value) {
@@ -141,51 +143,54 @@ class SettingsState extends State<Settings> {
                     ? Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                            CupertinoSlidingSegmentedControl<Durations>(
-                              backgroundColor: CupertinoColors.systemGrey2,
-                              thumbColor: Colors.blueAccent,
-                              // This represents the currently selected segmented control.
-                              groupValue: _selectedSegment,
-                              // Callback that sets the selected segmented control.
-                              onValueChanged: (Durations? value) {
-                                if (value != null) {
-                                  setState(() {
+                          CupertinoSlidingSegmentedControl<Durations>(
+                            backgroundColor: CupertinoColors.systemGrey2,
+                            thumbColor: Colors.blueAccent,
+                            // This represents the currently selected segmented control.
+                            groupValue: _selectedSegment,
+                            // Callback that sets the selected segmented control.
+                            onValueChanged: (Durations? value) {
+                              if (value != null) {
+                                setState(
+                                  () {
                                     _selectedSegment = value;
                                     dropdownValue = _durations.firstWhere(
                                         (element) =>
                                             element.value ==
                                             _durationsIOS[value]);
-                                  });
-                                }
-                              },
-                              children: const <Durations, Widget>{
-                                Durations.weekly: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 20),
-                                  child: Text(
-                                    'Weekly',
-                                    style:
-                                        TextStyle(color: CupertinoColors.white),
-                                  ),
-                                ),
-                                Durations.biweekly: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 20),
-                                  child: Text(
-                                    'BiWeekly',
-                                    style:
+                                  },
+                                );
+                              }
+                            },
+                            children: const <Durations, Widget>{
+                              Durations.weekly: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: Text(
+                                  'Weekly',
+                                  style:
                                       TextStyle(color: CupertinoColors.white),
-                                  ),
                                 ),
-                                Durations.monthly: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 20),
-                                  child: Text(
-                                    'Monthly',
-                                    style:
+                              ),
+                              Durations.biweekly: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: Text(
+                                  'BiWeekly',
+                                  style:
                                       TextStyle(color: CupertinoColors.white),
-                                  ),
                                 ),
-                              },
-                            ),
-                          ])
+                              ),
+                              Durations.monthly: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: Text(
+                                  'Monthly',
+                                  style:
+                                      TextStyle(color: CupertinoColors.white),
+                                ),
+                              ),
+                            },
+                          ),
+                        ],
+                      )
                     : DropdownButton<DurationTime>(
                         value: dropdownValue,
                         icon: const Icon(Icons.arrow_downward),
@@ -197,9 +202,11 @@ class SettingsState extends State<Settings> {
                         ),
                         onChanged: (DurationTime? value) {
                           // This is called when the user selects an item.
-                          setState(() {
-                            dropdownValue = value!;
-                          });
+                          setState(
+                            () {
+                              dropdownValue = value!;
+                            },
+                          );
                         },
                         items: _durations.map<DropdownMenuItem<DurationTime>>(
                           (DurationTime value) {

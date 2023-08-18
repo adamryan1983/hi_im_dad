@@ -152,8 +152,9 @@ class _MyHomePageState extends State<MyHomePage> {
         leading: Builder(
           builder: (context) => // Ensure Scaffold is in context
               IconButton(
-                  icon: const Icon(Icons.menu),
-                  onPressed: () => Scaffold.of(context).openDrawer()),
+                icon: const Icon(Icons.menu),
+                onPressed: () => Scaffold.of(context).openDrawer()
+              ),
         ),
 
         //end of bar
@@ -162,7 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
             '🔥',
             style: TextStyle(
               color: AppColors.mainTextWhite,
-              fontSize: 24,
+              fontSize: 22,
             ),
           ),
           const Padding(padding: EdgeInsets.symmetric(horizontal: 3)),
@@ -174,7 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
               fontSize: 24,
             ),
           ),
-          const Padding(padding: EdgeInsets.symmetric(horizontal: 12))
+          const Padding(padding: EdgeInsets.symmetric(horizontal: 8))
         ],
 
         // TRY THIS: Try changing the color here to a specific color (to
@@ -188,7 +189,7 @@ class _MyHomePageState extends State<MyHomePage> {
           widget.title,
           style: const TextStyle(
             color: AppColors.mainTextWhite,
-            fontSize: 32,
+            fontSize: 28,
             fontFamily: 'BungeeSpice',
           ),
         ),
