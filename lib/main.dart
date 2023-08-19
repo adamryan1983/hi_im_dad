@@ -13,10 +13,7 @@ import 'package:flutter/cupertino.dart';
 void main() async {
   await Hive.initFlutter();
   await Hive.openBox('userBox');
-
-  // box.put('name', 'Dadamo');
-  // box.put('duration', 7);
-  // box.put('rating', 0.0);
+  
   runApp(const MyApp());
 }
 
@@ -219,8 +216,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               Image.asset(
                 'assets/images/logo.png',
-                width: 300,
-                height: 300,
+                width: 200,
+                height: 200,
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,

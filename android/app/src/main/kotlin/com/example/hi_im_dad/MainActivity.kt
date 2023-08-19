@@ -1,4 +1,4 @@
-package me.thisisadamryan.hi-imdad
+package me.thisisadamryan.hiimdad
 
 import io.flutter.embedding.android.FlutterActivity
 

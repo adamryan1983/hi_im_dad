@@ -90,9 +90,9 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "me.thisisadamryan" "\0"
-            VALUE "FileDescription", "hi-imdad" "\0"
+            VALUE "FileDescription", "hiimdad" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "hi-imdad" "\0"
+            VALUE "InternalName", "hiimdad" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2023 me.thisisadamryan. All rights reserved." "\0"
             VALUE "OriginalFilename", "hi_im_dad.exe" "\0"
             VALUE "ProductName", "hi_im_dad" "\0"
