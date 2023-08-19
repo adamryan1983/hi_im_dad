@@ -1,4 +1,4 @@
-package com.example.hi_im_dad
+package me.thisisadamryan.hi-imdad
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -8,7 +8,7 @@
 PRODUCT_NAME = hi_im_dad
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.hiImDad
+PRODUCT_BUNDLE_IDENTIFIER = me.thisisadamryan.hi-imdad
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2023 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2023 me.thisisadamryan. All rights reserved.

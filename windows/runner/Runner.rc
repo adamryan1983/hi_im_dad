@@ -89,11 +89,11 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "hi_im_dad" "\0"
+            VALUE "CompanyName", "me.thisisadamryan" "\0"
+            VALUE "FileDescription", "hi-imdad" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "hi_im_dad" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2023 com.example. All rights reserved." "\0"
+            VALUE "InternalName", "hi-imdad" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2023 me.thisisadamryan. All rights reserved." "\0"
             VALUE "OriginalFilename", "hi_im_dad.exe" "\0"
             VALUE "ProductName", "hi_im_dad" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
