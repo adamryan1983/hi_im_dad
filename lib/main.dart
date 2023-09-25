@@ -9,11 +9,12 @@ import 'constants/colors.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart' as http;
 
 void main() async {
   await Hive.initFlutter();
   await Hive.openBox('userBox');
-  
+
   runApp(const MyApp());
 }
 
@@ -111,6 +112,24 @@ class _MyHomePageState extends State<MyHomePage> {
     _rating = 2.5;
   }
 
+  Future<String> fetchJoke() async {
+    var headers = {
+      'Accept': 'text/plain',
+    };
+    final response = await http.get(Uri.parse('https://icanhazdadjoke.com/'),
+        headers: headers);
+
+    if (response.statusCode == 200) {
+      // If the server did return a 200 OK response,
+      // then parse the JSON.
+      return response.body;
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      throw Exception('Failed to load joke');
+    }
+  }
+
   //sets the rating from the slider
   void _setRating(rating) {
     setState(() {
@@ -149,9 +168,9 @@ class _MyHomePageState extends State<MyHomePage> {
         leading: Builder(
           builder: (context) => // Ensure Scaffold is in context
               IconButton(
-                icon: const Icon(Icons.menu),
-                onPressed: () => Scaffold.of(context).openDrawer()
-              ),
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
         ),
 
         //end of bar
@@ -222,47 +241,6 @@ class _MyHomePageState extends State<MyHomePage> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Text(
-                  //   _box.get('name', defaultValue: 'N/A')!,
-                  //   style: Theme.of(context).textTheme.headlineMedium,
-                  // ),
-                  // RatingBar.builder(
-                  //     initialRating: 3,
-                  //     itemCount: 5,
-                  //     itemBuilder: (context, index) {
-                  //       switch (index) {
-                  //         case 0:
-                  //           return const Icon(
-                  //             Icons.sentiment_very_dissatisfied,
-                  //             color: Colors.red,
-                  //           );
-                  //         case 1:
-                  //           return const Icon(
-                  //             Icons.sentiment_dissatisfied,
-                  //             color: Colors.redAccent,
-                  //           );
-                  //         case 2:
-                  //           return const Icon(
-                  //             Icons.sentiment_neutral,
-                  //             color: Colors.amber,
-                  //           );
-                  //         case 3:
-                  //           return const Icon(
-                  //             Icons.sentiment_satisfied,
-                  //             color: Colors.lightGreen,
-                  //           );
-                  //         case 4:
-                  //           return const Icon(
-                  //             Icons.sentiment_very_satisfied,
-                  //             color: Colors.green,
-                  //           );
-                  //         default:
-                  //           return Container();
-                  //       }
-                  //     },
-                  //     onRatingUpdate: (rating) {
-                  //       _setRating(rating);
-                  //     }),
                   RatingBar(
                     initialRating: 3,
                     direction: Axis.horizontal,
@@ -320,9 +298,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 onPressed: () {
                                   resetUserRating();
                                 },
-                                
                                 child: const Text('Reset Rating'),
-                                
                               ),
                             )
                           : ElevatedButton(
@@ -339,14 +315,46 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ],
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 30),
-                child: Text(
-                    'This is a fun app to ask your family for a rating of your best dad jokes. \n'
-                    'Your family can rate them on a scale of 1-5. \n'
-                    'Choose between different durations to track the ultimate dad score. \n'
-                    'It will reset the score each period. You can also reset the rating to 0 manually. \n\n'
-                    'Have fun!'),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: !Platform.isIOS
+                    ? SizedBox(
+                        width: 120,
+                        height: 40,
+                        child: CupertinoButton(
+                          color: AppColors.lightOrange,
+                          padding: const EdgeInsets.all(0),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => _generateJoke(),
+                            );
+                          },
+                          child: const Text('Generate a Joke'),
+                        ),
+                      )
+                    : ElevatedButton(
+                        onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => _generateJoke(),
+                            );
+                          },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.armyGreen, // background
+                          foregroundColor: AppColors.lightBG, // foreground
+                        ),
+                        child: const Text(
+                          'Generate a Joke',
+                          style: TextStyle(fontSize: 15),
+                        ),
+                      ),
+                // child: Text(
+                //     'Grab a generated joke, or make up your own! \n'
+                //     'Your family can rate them on a scale of 1-5. \n'
+                //     'Choose between different durations to track the ultimate dad score. \n'
+                //     'It will reset the score each period. You can also reset the rating to 0 manually. \n\n'
+                //     'Have fun!'),
               ),
             ]),
       ),
@@ -360,6 +368,26 @@ class _MyHomePageState extends State<MyHomePage> {
       height: 30.0,
       width: 30.0,
       color: Colors.amber,
+    );
+  }
+
+  Widget _generateJoke() {
+    return AlertDialog(
+      title: const Text('Random Dad Joke'),
+      content: FutureBuilder(
+          future: fetchJoke(),
+          builder: (BuildContext context, AsyncSnapshot<String> text) {
+            return Text(
+                text.data == null ? 'Loading...' : text.data.toString());
+          }),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Close'),
+        ),
+      ],
     );
   }
 }
