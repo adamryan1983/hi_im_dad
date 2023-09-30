@@ -12,6 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await Hive.openBox('userBox');
 
@@ -317,23 +318,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: !Platform.isIOS
-                    ? SizedBox(
-                        width: 120,
-                        height: 40,
-                        child: CupertinoButton(
-                          color: AppColors.lightOrange,
-                          padding: const EdgeInsets.all(0),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) => _generateJoke(),
-                            );
-                          },
-                          child: const Text('Generate a Joke'),
-                        ),
-                      )
-                    : ElevatedButton(
+                child: ElevatedButton(
                         onPressed: () {
                             showDialog(
                               context: context,
